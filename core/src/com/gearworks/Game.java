@@ -31,7 +31,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Array.ArrayIterable;
+import com.gearworks.entities.Unit;
 import com.gearworks.game.Level;
+import com.gearworks.state.GameState;
 import com.gearworks.state.State;
 import com.gearworks.state.StateManager;
 
@@ -141,6 +143,10 @@ public class Game implements ApplicationListener {
 		inputMultiplexer.addProcessor(stage);
 		*/
 		inputMultiplexer.addProcessor(ui);
+		
+		sm.setState(new GameState());
+
+		spawn(new Unit(new Player(), this));
 	}
 
 	@Override
@@ -159,6 +165,9 @@ public class Game implements ApplicationListener {
 	        
 	        camera.viewportWidth = viewport.width;
 	        camera.viewportHeight = viewport.height;
+	        
+
+			//camera.update();
 	        System.out.println("UPDATE VIEWPORT");
 		}
 		
@@ -172,7 +181,6 @@ public class Game implements ApplicationListener {
 			accum -= STEP;
 			
 			sm.update();
-			camera.update();
 		}
 
 

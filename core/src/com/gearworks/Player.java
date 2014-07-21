@@ -11,6 +11,11 @@ public class Player {
 		Demons
 	}
 	
+	public enum Type{
+		Human,
+		AI
+	}
+	
 	protected Team	team;				
 	private int 	instanceId;			//Unique instace id assigned by the server once a connection has been made
 	
