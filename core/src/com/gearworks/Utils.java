@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.utils.Array;
 
 public class Utils {
 	public static float PI 				= (float)Math.PI;
@@ -16,7 +17,6 @@ public class Utils {
 	public static float PI_OVER_2 		= PI / 2;
 	public static float angleEpsilon 	= degToRad(1);
 	
-	//TODO: Update this to check for overlapping entity bounds rather than entity point position in bounds
 	public static ArrayList<Entity> findEntitiesInBox(ArrayList<Entity> haystack, Rectangle bounds){
 		ArrayList<Entity> found = new ArrayList<Entity>();
 		for(Entity e : haystack){
@@ -28,31 +28,47 @@ public class Utils {
 	}
 	
 	public static boolean entityIsInBox(Entity e, Rectangle bounds){
-		float entX 		= e.position().x;
-		float entY 		= e.position().y;
-		float bndX 		= bounds.getX();
-		float bndY 		= bounds.getY();
-		float bndXMax 	= bndX + bounds.getWidth();
-		float bndYMax 	= bndY + bounds.getHeight();
+		return e.getBounds().overlaps(bounds);
 		
-		if(entX <= bndXMax 	&& 
-		   entX >= bndX		&&
-		   entY <= bndYMax	&&
-		   entY >= bndY)
-		{
-			return true;
-		}
-		
-		return false;
-		
+	}
+	
+	public static boolean entityContainsPoint(Entity e, Vector2 point){
+		return e.getBounds().contains(point);
 	}
 	
 	public static ArrayList<Entity> selectEntitiesInBox(ArrayList<Entity> haystack, Rectangle bounds){
 		ArrayList<Entity> found = new ArrayList<Entity>();
 		for(Entity e : haystack){
 			if(e.selectable()){
-				if(entityIsInBox(e, bounds))
+				if(entityIsInBox(e, bounds)){
+					e.selected(true);
 					found.add(e);
+				}
+			}
+		}
+		
+		return found;		
+	}
+	
+	public static ArrayList<Entity> entityContainsPoint(ArrayList<Entity> haystack, Vector2 point){
+		ArrayList<Entity> found = new ArrayList<Entity>();
+		for(Entity e : haystack){
+			if(entityContainsPoint(e, point))
+				found.add(e);
+		}
+		
+		return found;
+		
+	}
+	
+	public static ArrayList<Entity> selectEntitiesAtPoint(ArrayList<Entity> haystack, Vector2 point){
+		ArrayList<Entity> found = new ArrayList<Entity>();
+		for(Entity e : haystack){
+			if(e.selectable()){
+				if(entityContainsPoint(e, point)){
+					e.selected(true);
+					found.add(e);
+				}
 			}
 		}
 		
@@ -74,6 +90,16 @@ public class Utils {
 			r.setColor(color);
 			r.translate(x, y, 0f);
 			r.rect(0, 0, w, h);
+		r.end();
+	}
+	
+	public static void fillRect(ShapeRenderer r, Color color, float x, float y, float w, float h, float angle){
+		r.identity();
+		r.begin(ShapeType.Filled);
+			r.setColor(color);
+			r.translate(x + w/2, y + h/2, 0f);
+			r.rotate(0, 0, 1, angle);
+			r.rect(-w/2, -h/2, w, h);
 		r.end();
 	}
 	

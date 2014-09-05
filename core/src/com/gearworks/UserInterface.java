@@ -16,13 +16,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
+import com.gearworks.entities.Unit;
 
 public class UserInterface implements InputProcessor{
 	private Game game;
 	
 	public boolean debug_showContacts = true;
 	
-	private Array<Entity> selected;
+	private ArrayList<Entity> selected;
 	//private Array<Group> groups;
 	private Vector2 dragStart;
 	private Vector2 dragPos;
@@ -59,17 +60,13 @@ public class UserInterface implements InputProcessor{
 	}
 
 	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if(button == 0){
-			selected = null;
-		}
-		
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {		
 		return true; //This could interfere with menus in the future, unless this class handles the clicks...
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		if(dragStart != null && dragPos != null){
+		if(dragStart != null && dragPos != null && button == 0){
 			//If the height is negative we want to swap dragStart.y and dragPos.y to flip the box so it is not upside down and picking will work
 			if(dragPos.y - dragStart.y < 0){
 				float tmp = dragPos.y;
@@ -84,18 +81,45 @@ public class UserInterface implements InputProcessor{
 				dragStart.x = tmp;
 			}
 			
+
+			deselectAll();
+			
 			Rectangle bounds = new Rectangle(	dragStart.x,
 												dragStart.y,
 												dragPos.x - dragStart.x,
 												dragPos.y - dragStart.y);
-			//selected = Utils.selectEntitiesInBox(game.entities(), bounds);
+			selected = Utils.selectEntitiesInBox(game.entities(), bounds);
 			
 			dragStart = null;
 			dragPos = null;
+		}else if(button == 0){
+			deselectAll();
+			
+			selected = Utils.selectEntitiesAtPoint(game.entities(), mouseToScreen(new Vector2(screenX, screenY), game.camera()));
+		}else if(button == 1){
+			if(selected != null){
+				for(Entity e : selected){
+					if(e instanceof Unit){
+						Unit u = (Unit)e;
+						u.moveTo(new Vector2(mouseToScreen(new Vector2(screenX, screenY), game.camera())));
+					}
+				}
+			}
 		}
+		
 		return true; //This could interfere with menus in the future, unless this class handles the clicks...
 	}
-
+	
+	public void deselectAll(){
+		if(selected != null){
+			for(Entity e : selected){
+				e.selected(false);
+			}
+		}
+		
+		selected = null;
+	}
+	
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
 		if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
