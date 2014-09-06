@@ -30,14 +30,30 @@ public class ContactHandler implements ContactListener{
 
 	@Override
 	public void preSolve(Contact contact, Manifold oldManifold) {
-		contact.setTangentSpeed(0);
+		Fixture fixA = contact.getFixtureA();
+		Fixture fixB = contact.getFixtureB();
 		
+		if(fixA == null || fixB == null || fixA.getUserData() == null || fixB.getUserData() == null) return;
+		
+		Entity entA = (Entity)fixA.getUserData();
+		Entity entB = (Entity)fixB.getUserData();
+		
+		entA.presolveContactWith(fixA, fixB, contact);
+		entB.presolveContactWith(fixB, fixA, contact);
 	}
 
 	@Override
 	public void postSolve(Contact contact, ContactImpulse impulse) {
-		// TODO Auto-generated method stub
+		Fixture fixA = contact.getFixtureA();
+		Fixture fixB = contact.getFixtureB();
 		
+		if(fixA == null || fixB == null || fixA.getUserData() == null || fixB.getUserData() == null) return;
+		
+		Entity entA = (Entity)fixA.getUserData();
+		Entity entB = (Entity)fixB.getUserData();
+		
+		entA.postsolveContactWith(fixA, fixB, contact);
+		entB.postsolveContactWith(fixB, fixA, contact);
 	}
 
 }

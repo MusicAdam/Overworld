@@ -16,7 +16,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
-import com.gearworks.entities.Unit;
+import com.gearworks.entities.Disk;
 
 public class UserInterface implements InputProcessor{
 	private Game game;
@@ -32,7 +32,7 @@ public class UserInterface implements InputProcessor{
 	float selectionPadding = 0f;
 
 	//Takes a mouse coordinate and returns screen coordinates, does not alter original vector
-	public static Vector2 mouseToScreen(Vector2 coord, Camera cam){
+	public static Vector2 screenToWorld(Vector2 coord, Camera cam){
 		Vector3 screenCoord = new Vector3(coord.x, coord.y, 0);
 		cam.unproject(screenCoord);
 		return new Vector2(screenCoord.x, screenCoord.y);
@@ -46,6 +46,11 @@ public class UserInterface implements InputProcessor{
 
 	@Override
 	public boolean keyDown(int keycode) {
+		if(keycode == Input.Keys.SPACE){
+			Vector2 mousePos = screenToWorld(new Vector2(Gdx.input.getX(), Gdx.input.getY()), game.camera());
+			Vector2 dir = mousePos.sub(game.player().disk().position()).nor();
+			game.player().disk().applyImpulse(dir);
+		}
 		return false;
 	}
 
@@ -66,72 +71,21 @@ public class UserInterface implements InputProcessor{
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		if(dragStart != null && dragPos != null && button == 0){
-			//If the height is negative we want to swap dragStart.y and dragPos.y to flip the box so it is not upside down and picking will work
-			if(dragPos.y - dragStart.y < 0){
-				float tmp = dragPos.y;
-				dragPos.y = dragStart.y;
-				dragStart.y = tmp;
-			}
+		if(button == 0){
+			Vector2 mousePos = screenToWorld(new Vector2(screenX, screenY), game.camera());
 			
-			//Do this for x axis as well
-			if(dragPos.x - dragStart.x < 0){
-				float tmp = dragPos.x;
-				dragPos.x = dragStart.x;
-				dragStart.x = tmp;
-			}
-			
-
-			deselectAll();
-			
-			Rectangle bounds = new Rectangle(	dragStart.x,
-												dragStart.y,
-												dragPos.x - dragStart.x,
-												dragPos.y - dragStart.y);
-			selected = Utils.selectEntitiesInBox(game.entities(), bounds);
-			
-			dragStart = null;
-			dragPos = null;
-		}else if(button == 0){
-			deselectAll();
-			
-			selected = Utils.selectEntitiesAtPoint(game.entities(), mouseToScreen(new Vector2(screenX, screenY), game.camera()));
+			Vector2 dir = mousePos.sub(game.player().disk().position()).nor();
+			game.player().disk().turnTo(dir);
 		}else if(button == 1){
-			if(selected != null){
-				for(Entity e : selected){
-					if(e instanceof Unit){
-						Unit u = (Unit)e;
-						u.moveTo(new Vector2(mouseToScreen(new Vector2(screenX, screenY), game.camera())));
-					}
-				}
-			}
 		}
 		
 		return true; //This could interfere with menus in the future, unless this class handles the clicks...
 	}
 	
-	public void deselectAll(){
-		if(selected != null){
-			for(Entity e : selected){
-				e.selected(false);
-			}
-		}
-		
-		selected = null;
-	}
-	
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
-			Vector2 mousePos = new Vector2(screenX, screenY);
-			
-			if(dragStart == null)
-				dragStart = mouseToScreen(mousePos, game.camera());
-			
-			dragPos = mouseToScreen(mousePos, game.camera());
-		}
 		
-		return true;
+		return false;
 	}
 
 	@Override
@@ -147,14 +101,6 @@ public class UserInterface implements InputProcessor{
 	public void render(SpriteBatch batch, ShapeRenderer renderer){
 		renderer.setProjectionMatrix(game.camera().combined);
 		renderer.identity();
-		
-		//Draw the selection box
-		if(dragStart != null && dragPos != null){
-			float width = dragPos.x - dragStart.x;
-			float height = dragPos.y - dragStart.y;
-
-			Utils.drawRect(renderer, Color.RED, dragStart.x, dragStart.y, width, height);
-		}
 	}
 
 }

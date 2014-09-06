@@ -51,7 +51,7 @@ public class Entity {
 	
 	public void position(Vector2 p){ 
 		body.setTransform(p.scl(Game.WORLD_TO_BOX), body.getAngle()); 
-		body.setAwake(true);
+		body.setAwake(true); //This is to register collisions
 	}
 	
 	public float rotation(){
@@ -60,7 +60,7 @@ public class Entity {
 	
 	public void rotation(float angle){
 		body.setTransform(body.getPosition(), Utils.degToRad(angle));
-		body.setAwake(true);
+		body.setAwake(true); //This is to register collisiosn
 	}
 	
 	public void position(float x, float y){
@@ -93,9 +93,9 @@ public class Entity {
 	
 	public void dispose(){}
 	
-	public void beginContactWith(Fixture myFix, Fixture otherFix, Contact contact){
-		System.out.println("A collision happened");
-	}
+	public void beginContactWith(Fixture myFix, Fixture otherFix, Contact contact){}
+	public void presolveContactWith(Fixture myFix, Fixture otherFix, Contact contact){}
+	public void postsolveContactWith(Fixture myFix, Fixture otherFix, Contact contact){}
 	
 	protected void followPhysicsBody(){
 		if(sprite == null) return;

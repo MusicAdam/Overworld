@@ -40,12 +40,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Array.ArrayIterable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.gearworks.entities.Unit;
+import com.gearworks.entities.Disk;
 import com.gearworks.game.Level;
 import com.gearworks.state.GameState;
 import com.gearworks.state.State;
 import com.gearworks.state.StateManager;
 
+//Note: Multiple modes including team play, and that pool game i used to play when i was a kid
 public class Game implements ApplicationListener {
 	public static final String 	TITLE = "Overworld";
 	public static final int 	V_WIDTH = 800;
@@ -76,6 +77,8 @@ public class Game implements ApplicationListener {
 	//Box2d stuff
 	private World world;
 	private Box2DDebugRenderer b2ddbgRenderer;
+	
+	private Player player;
 	
 	@Override
 	public void create() {	
@@ -112,11 +115,10 @@ public class Game implements ApplicationListener {
 		
 		b2ddbgRenderer = new Box2DDebugRenderer();
 		
-		Entity ent = spawn(new Unit(new Player(), this));
-		ent.position(150,  150);
-		spawn(new Unit(new Player(), this));
+		player = new Player(this);
+		player.spawnDisk();
 		
-		
+		spawn(new Disk(null, this));
 	}
 
 	@Override
@@ -188,4 +190,5 @@ public class Game implements ApplicationListener {
 	public ShapeRenderer renderer() { return renderer; }
 	public UserInterface ui(){ return ui; }
 	public World world(){ return world; }
+	public Player player(){ return player; }
 }
