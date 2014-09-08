@@ -122,7 +122,7 @@ public class Disk extends Entity {
 	
 	@Override
 	public void spawn(){
-		sprite = new Sprite(new Texture(Gdx.files.internal("debug_square.png")));
+		sprite = new Sprite(new Texture(Gdx.files.internal("disk.png")));
 		sprite.setOriginCenter();
 		
 		//Create body def

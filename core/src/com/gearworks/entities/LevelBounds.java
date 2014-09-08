@@ -25,7 +25,6 @@ public class LevelBounds extends Entity {
 		float screenHeight = Gdx.graphics.getHeight() * Game.WORLD_TO_BOX;
 		
 		FixtureDef lineDef = new FixtureDef();
-		lineDef.shape = testBox;
 		lineDef.density = 1.0f;
 		lineDef.friction = 0.1f;
 		lineDef.restitution = 0.0f;
@@ -33,16 +32,26 @@ public class LevelBounds extends Entity {
 		EdgeShape topLine = new EdgeShape();
 		topLine.set(0, screenHeight, screenWidth,screenHeight);
 		
-		body.createFixture(def)
+		lineDef.shape = topLine;
+		body.createFixture(lineDef);
 		
 		EdgeShape leftLine = new EdgeShape();
 		leftLine.set(0, screenHeight, 0, 0);
 		
+		lineDef.shape = leftLine;
+		body.createFixture(lineDef);
+		
 		EdgeShape bottomLine = new EdgeShape();
 		bottomLine.set(0, 0, screenWidth, 0);
 		
+		lineDef.shape = bottomLine;
+		body.createFixture(lineDef);
+		
 		EdgeShape rightLine = new EdgeShape();
 		rightLine.set(screenWidth, 0, screenWidth, screenHeight);
+		
+		lineDef.shape = rightLine;
+		body.createFixture(lineDef);
 		
 		
 		

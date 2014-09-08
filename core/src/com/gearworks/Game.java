@@ -41,6 +41,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Array.ArrayIterable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.gearworks.entities.Disk;
+import com.gearworks.entities.LevelBounds;
 import com.gearworks.game.Level;
 import com.gearworks.state.GameState;
 import com.gearworks.state.State;
@@ -119,6 +120,7 @@ public class Game implements ApplicationListener {
 		player.spawnDisk();
 		
 		spawn(new Disk(null, this));
+		spawn(new LevelBounds(this));
 	}
 
 	@Override
@@ -146,7 +148,7 @@ public class Game implements ApplicationListener {
 		ui.render(batch, renderer);
 		
 		Matrix4 dbgMatrix = camera.combined.cpy().scl(BOX_TO_WORLD);
-		b2ddbgRenderer.render(world, dbgMatrix);
+		//b2ddbgRenderer.render(world, dbgMatrix);
 		
 		world.step(STEP, 6, 8);
 	}
